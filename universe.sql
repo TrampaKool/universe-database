@@ -51,7 +51,7 @@ CREATE TABLE public.galaxy (
     galaxy_id integer NOT NULL,
     name character varying(30) NOT NULL,
     age_in_billions_of_years numeric(5,3),
-    galaxy_type_id integer,
+    galaxy_types_id integer,
     distance_from_earth_in_billion_ly numeric(6,4)
 );
 
@@ -85,7 +85,7 @@ ALTER SEQUENCE public.galaxy_galaxy_id_seq OWNED BY public.galaxy.galaxy_id;
 --
 
 CREATE TABLE public.galaxy_types (
-    galaxy_type_id integer NOT NULL,
+    galaxy_types_id integer NOT NULL,
     name character varying(20) NOT NULL,
     description text
 );
@@ -112,7 +112,7 @@ ALTER TABLE public.galaxy_types_galaxy_type_id_seq OWNER TO freecodecamp;
 -- Name: galaxy_types_galaxy_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
 --
 
-ALTER SEQUENCE public.galaxy_types_galaxy_type_id_seq OWNED BY public.galaxy_types.galaxy_type_id;
+ALTER SEQUENCE public.galaxy_types_galaxy_type_id_seq OWNED BY public.galaxy_types.galaxy_types_id;
 
 
 --
@@ -125,7 +125,7 @@ CREATE TABLE public.moon (
     mass_in_lunar_masses numeric(9,8),
     distance_from_earth_in_million_km numeric(7,3),
     planet_id integer,
-    moon_type_id integer
+    moon_types_id integer
 );
 
 
@@ -158,7 +158,7 @@ ALTER SEQUENCE public.moon_moon_id_seq OWNED BY public.moon.moon_id;
 --
 
 CREATE TABLE public.moon_types (
-    moon_type_id integer NOT NULL,
+    moon_types_id integer NOT NULL,
     name character varying(15) NOT NULL,
     description text
 );
@@ -185,7 +185,7 @@ ALTER TABLE public.moon_types_moon_type_id_seq OWNER TO freecodecamp;
 -- Name: moon_types_moon_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
 --
 
-ALTER SEQUENCE public.moon_types_moon_type_id_seq OWNED BY public.moon_types.moon_type_id;
+ALTER SEQUENCE public.moon_types_moon_type_id_seq OWNED BY public.moon_types.moon_types_id;
 
 
 --
@@ -198,7 +198,8 @@ CREATE TABLE public.planet (
     mass_in_earth_masses numeric(7,3),
     distance_from_earth_in_billion_km numeric(12,3),
     star_id integer,
-    planet_type_id integer
+    planet_types_id integer,
+    number_of_orbiting_moons integer
 );
 
 
@@ -231,9 +232,10 @@ ALTER SEQUENCE public.planet_planet_id_seq OWNED BY public.planet.planet_id;
 --
 
 CREATE TABLE public.planet_types (
-    planet_type_id integer NOT NULL,
+    planet_types_id integer NOT NULL,
     name character varying(20) NOT NULL,
-    description text
+    description text,
+    has_solid_surface boolean
 );
 
 
@@ -258,7 +260,7 @@ ALTER TABLE public.planet_types_planet_type_id_seq OWNER TO freecodecamp;
 -- Name: planet_types_planet_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
 --
 
-ALTER SEQUENCE public.planet_types_planet_type_id_seq OWNED BY public.planet_types.planet_type_id;
+ALTER SEQUENCE public.planet_types_planet_type_id_seq OWNED BY public.planet_types.planet_types_id;
 
 
 --
@@ -271,7 +273,9 @@ CREATE TABLE public.star (
     mass_in_solar_masses numeric(6,3),
     distance_from_earth_in_thousand_ly numeric(18,10),
     galaxy_id integer,
-    star_type_id integer
+    star_types_id integer,
+    number_of_orbiting_planets integer,
+    visible_by_eye boolean
 );
 
 
@@ -304,7 +308,7 @@ ALTER SEQUENCE public.star_star_id_seq OWNED BY public.star.star_id;
 --
 
 CREATE TABLE public.star_types (
-    star_type_id integer NOT NULL,
+    star_types_id integer NOT NULL,
     name character varying(30) NOT NULL,
     description text
 );
@@ -331,7 +335,7 @@ ALTER TABLE public.star_types_star_type_id_seq OWNER TO freecodecamp;
 -- Name: star_types_star_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
 --
 
-ALTER SEQUENCE public.star_types_star_type_id_seq OWNED BY public.star_types.star_type_id;
+ALTER SEQUENCE public.star_types_star_type_id_seq OWNED BY public.star_types.star_types_id;
 
 
 --
@@ -342,10 +346,10 @@ ALTER TABLE ONLY public.galaxy ALTER COLUMN galaxy_id SET DEFAULT nextval('publi
 
 
 --
--- Name: galaxy_types galaxy_type_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+-- Name: galaxy_types galaxy_types_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
-ALTER TABLE ONLY public.galaxy_types ALTER COLUMN galaxy_type_id SET DEFAULT nextval('public.galaxy_types_galaxy_type_id_seq'::regclass);
+ALTER TABLE ONLY public.galaxy_types ALTER COLUMN galaxy_types_id SET DEFAULT nextval('public.galaxy_types_galaxy_type_id_seq'::regclass);
 
 
 --
@@ -356,10 +360,10 @@ ALTER TABLE ONLY public.moon ALTER COLUMN moon_id SET DEFAULT nextval('public.mo
 
 
 --
--- Name: moon_types moon_type_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+-- Name: moon_types moon_types_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
-ALTER TABLE ONLY public.moon_types ALTER COLUMN moon_type_id SET DEFAULT nextval('public.moon_types_moon_type_id_seq'::regclass);
+ALTER TABLE ONLY public.moon_types ALTER COLUMN moon_types_id SET DEFAULT nextval('public.moon_types_moon_type_id_seq'::regclass);
 
 
 --
@@ -370,10 +374,10 @@ ALTER TABLE ONLY public.planet ALTER COLUMN planet_id SET DEFAULT nextval('publi
 
 
 --
--- Name: planet_types planet_type_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+-- Name: planet_types planet_types_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
-ALTER TABLE ONLY public.planet_types ALTER COLUMN planet_type_id SET DEFAULT nextval('public.planet_types_planet_type_id_seq'::regclass);
+ALTER TABLE ONLY public.planet_types ALTER COLUMN planet_types_id SET DEFAULT nextval('public.planet_types_planet_type_id_seq'::regclass);
 
 
 --
@@ -384,10 +388,10 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 
 
 --
--- Name: star_types star_type_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+-- Name: star_types star_types_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
-ALTER TABLE ONLY public.star_types ALTER COLUMN star_type_id SET DEFAULT nextval('public.star_types_star_type_id_seq'::regclass);
+ALTER TABLE ONLY public.star_types ALTER COLUMN star_types_id SET DEFAULT nextval('public.star_types_star_type_id_seq'::regclass);
 
 
 --
@@ -397,6 +401,9 @@ ALTER TABLE ONLY public.star_types ALTER COLUMN star_type_id SET DEFAULT nextval
 INSERT INTO public.galaxy VALUES (1, 'Milky Way', 13.600, 1, 0.0000);
 INSERT INTO public.galaxy VALUES (2, 'Messier 87', 13.000, 2, 53.5000);
 INSERT INTO public.galaxy VALUES (3, 'Large Magellanic Cloud', 10.000, 3, 0.1630);
+INSERT INTO public.galaxy VALUES (4, 'Sombrero Galaxy (M104)', 10.000, 1, 0.0100);
+INSERT INTO public.galaxy VALUES (5, 'Andromeda Galaxy (M31)', 10.000, 1, 0.0025);
+INSERT INTO public.galaxy VALUES (6, 'Triangulum Galaxy (M33)', 13.000, 1, 0.0030);
 
 
 --
@@ -415,6 +422,23 @@ INSERT INTO public.galaxy_types VALUES (3, 'Irregular Galaxy', 'These galaxies l
 INSERT INTO public.moon VALUES (1, 'The Moon', 1.00000000, 0.384, 1, 1);
 INSERT INTO public.moon VALUES (2, 'Himalia', 0.00020000, 653.400, 2, 2);
 INSERT INTO public.moon VALUES (3, 'Naiad', 0.00000700, 4300.000, 3, 3);
+INSERT INTO public.moon VALUES (4, 'Phobos', 0.00000800, 9.400, 4, 1);
+INSERT INTO public.moon VALUES (5, 'Deimos', 0.00000300, 23.500, 4, 1);
+INSERT INTO public.moon VALUES (6, 'Io', 0.00097400, 421.800, 2, 1);
+INSERT INTO public.moon VALUES (7, 'Europa', 0.00024900, 671.100, 2, 1);
+INSERT INTO public.moon VALUES (8, 'Ganymede', 0.00251600, 1070.300, 2, 1);
+INSERT INTO public.moon VALUES (9, 'Callisto', 0.00348600, 1882.700, 2, 1);
+INSERT INTO public.moon VALUES (10, 'Titan', 0.02250000, 1270.000, 6, 1);
+INSERT INTO public.moon VALUES (11, 'Rhea', 0.00234900, 527.000, 6, 1);
+INSERT INTO public.moon VALUES (12, 'Iapetus', 0.00085900, 356.400, 6, 2);
+INSERT INTO public.moon VALUES (13, 'Mimas', 0.00032700, 185.000, 6, 1);
+INSERT INTO public.moon VALUES (14, 'Enceladus', 0.00013800, 238.000, 6, 1);
+INSERT INTO public.moon VALUES (15, 'Triton', 0.00070200, 3540.000, 3, 1);
+INSERT INTO public.moon VALUES (16, 'Charon', 0.00004700, 595.000, 8, 1);
+INSERT INTO public.moon VALUES (17, 'Kepler-22b Moon', 0.00100000, 1.300, 9, 1);
+INSERT INTO public.moon VALUES (18, 'Tethys', 0.00128000, 294.700, 6, 1);
+INSERT INTO public.moon VALUES (19, 'Dione', 0.00110400, 377.400, 6, 1);
+INSERT INTO public.moon VALUES (20, 'Hyperion', 0.00024900, 1470.000, 6, 2);
 
 
 --
@@ -430,27 +454,44 @@ INSERT INTO public.moon_types VALUES (3, 'Inner Moon', 'Inner moons are moons th
 -- Data for Name: planet; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.planet VALUES (2, 'Jupiter', 317.800, 0.778, 1, 2);
-INSERT INTO public.planet VALUES (3, 'Neptune', 17.100, 4.300, 1, 3);
-INSERT INTO public.planet VALUES (1, 'Earth', 1.000, 0.000, 1, 1);
+INSERT INTO public.planet VALUES (4, 'Mars', 0.107, 0.228, 1, 1, 2);
+INSERT INTO public.planet VALUES (5, 'Venus', 0.815, 0.042, 1, 1, 0);
+INSERT INTO public.planet VALUES (6, 'Saturn', 95.160, 1.429, 1, 2, 82);
+INSERT INTO public.planet VALUES (7, 'Uranus', 14.536, 2.871, 1, 3, 28);
+INSERT INTO public.planet VALUES (8, 'Pluto', 0.002, 39.482, 1, 1, 5);
+INSERT INTO public.planet VALUES (2, 'Jupiter', 317.800, 0.778, 1, 2, 95);
+INSERT INTO public.planet VALUES (1, 'Earth', 1.000, 0.000, 1, 1, 1);
+INSERT INTO public.planet VALUES (3, 'Neptune', 17.100, 4.300, 1, 3, 14);
+INSERT INTO public.planet VALUES (9, 'Kepler-22b', 2.400, 1.300, 11, 1, NULL);
+INSERT INTO public.planet VALUES (10, 'Kepler-16b', 0.960, 1.000, 8, 2, NULL);
+INSERT INTO public.planet VALUES (11, 'HD 209458 b', 0.687, 0.075, 7, 2, NULL);
+INSERT INTO public.planet VALUES (12, 'Kepler-62f', 1.400, 1.200, 10, 1, NULL);
 
 
 --
 -- Data for Name: planet_types; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.planet_types VALUES (1, 'Terrestrial Planet', 'Terrestrial planets, also known as rocky planets, have a solid, rocky surface. They are composed primarily of metals and silicates. These planets are closer to their stars and generally have a well-defined surface.');
-INSERT INTO public.planet_types VALUES (2, 'Gas Giant', 'Gas giants are large planets composed mostly of hydrogen and helium. They lack a solid surface and have deep atmospheres. These planets are found farther from their stars and often have many moons and rings.');
-INSERT INTO public.planet_types VALUES (3, 'Ice Giant', 'Ice giants are similar to gas giants but have a higher proportion of elements like water, ammonia, and methane (often referred to as "ices"). They also lack solid surfaces and are colder than gas giants.');
+INSERT INTO public.planet_types VALUES (1, 'Terrestrial Planet', 'Terrestrial planets, also known as rocky planets, have a solid, rocky surface. They are composed primarily of metals and silicates. These planets are closer to their stars and generally have a well-defined surface.', true);
+INSERT INTO public.planet_types VALUES (2, 'Gas Giant', 'Gas giants are large planets composed mostly of hydrogen and helium. They lack a solid surface and have deep atmospheres. These planets are found farther from their stars and often have many moons and rings.', false);
+INSERT INTO public.planet_types VALUES (3, 'Ice Giant', 'Ice giants are similar to gas giants but have a higher proportion of elements like water, ammonia, and methane (often referred to as "ices"). They also lack solid surfaces and are colder than gas giants.', false);
 
 
 --
 -- Data for Name: star; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.star VALUES (1, 'Sun', 1.000, 0.0000000000, 1, 1);
-INSERT INTO public.star VALUES (2, 'M87 Star', 1.500, 53500.0000000000, 2, 2);
-INSERT INTO public.star VALUES (3, 'LMC X-1', 10.000, 50.0000000000, 3, 3);
+INSERT INTO public.star VALUES (2, 'M87 Star', 1.500, 53500.0000000000, 2, 2, NULL, false);
+INSERT INTO public.star VALUES (1, 'Sun', 1.000, 0.0000000000, 1, 1, 8, true);
+INSERT INTO public.star VALUES (3, 'PSR J0537−6910', 1.750, 160.0000000000, 3, 3, NULL, false);
+INSERT INTO public.star VALUES (4, 'Rigel', 21.000, 0.8600000000, 1, NULL, NULL, true);
+INSERT INTO public.star VALUES (5, 'S2', 15.000, 26.0000000000, 1, 1, NULL, false);
+INSERT INTO public.star VALUES (6, 'R136a1', 200.000, 163.0000000000, 3, NULL, NULL, false);
+INSERT INTO public.star VALUES (7, 'HD 209458', 1.100, 0.1500000000, 1, 1, 1, false);
+INSERT INTO public.star VALUES (8, 'Kepler-16A', 0.690, 0.3300000000, 1, 2, 1, false);
+INSERT INTO public.star VALUES (9, 'Kepler-16B', 0.200, 0.3300000000, 1, 2, 1, false);
+INSERT INTO public.star VALUES (10, 'Kepler-62', 0.690, 1.2000000000, 1, 1, 5, false);
+INSERT INTO public.star VALUES (11, 'Kepler-22', 1.000, 0.6000000000, 1, 1, 1, false);
 
 
 --
@@ -466,7 +507,7 @@ INSERT INTO public.star_types VALUES (3, 'Neutron Star', 'Neutron stars are the 
 -- Name: galaxy_galaxy_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.galaxy_galaxy_id_seq', 3, true);
+SELECT pg_catalog.setval('public.galaxy_galaxy_id_seq', 6, true);
 
 
 --
@@ -480,7 +521,7 @@ SELECT pg_catalog.setval('public.galaxy_types_galaxy_type_id_seq', 3, true);
 -- Name: moon_moon_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.moon_moon_id_seq', 3, true);
+SELECT pg_catalog.setval('public.moon_moon_id_seq', 20, true);
 
 
 --
@@ -494,7 +535,7 @@ SELECT pg_catalog.setval('public.moon_types_moon_type_id_seq', 3, true);
 -- Name: planet_planet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.planet_planet_id_seq', 3, true);
+SELECT pg_catalog.setval('public.planet_planet_id_seq', 12, true);
 
 
 --
@@ -508,7 +549,7 @@ SELECT pg_catalog.setval('public.planet_types_planet_type_id_seq', 3, true);
 -- Name: star_star_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.star_star_id_seq', 3, true);
+SELECT pg_catalog.setval('public.star_star_id_seq', 11, true);
 
 
 --
@@ -547,7 +588,7 @@ ALTER TABLE ONLY public.galaxy_types
 --
 
 ALTER TABLE ONLY public.galaxy_types
-    ADD CONSTRAINT galaxy_types_pkey PRIMARY KEY (galaxy_type_id);
+    ADD CONSTRAINT galaxy_types_pkey PRIMARY KEY (galaxy_types_id);
 
 
 --
@@ -579,7 +620,7 @@ ALTER TABLE ONLY public.moon_types
 --
 
 ALTER TABLE ONLY public.moon_types
-    ADD CONSTRAINT moon_types_pkey PRIMARY KEY (moon_type_id);
+    ADD CONSTRAINT moon_types_pkey PRIMARY KEY (moon_types_id);
 
 
 --
@@ -611,7 +652,7 @@ ALTER TABLE ONLY public.planet_types
 --
 
 ALTER TABLE ONLY public.planet_types
-    ADD CONSTRAINT planet_types_pkey PRIMARY KEY (planet_type_id);
+    ADD CONSTRAINT planet_types_pkey PRIMARY KEY (planet_types_id);
 
 
 --
@@ -643,7 +684,7 @@ ALTER TABLE ONLY public.star_types
 --
 
 ALTER TABLE ONLY public.star_types
-    ADD CONSTRAINT star_types_pkey PRIMARY KEY (star_type_id);
+    ADD CONSTRAINT star_types_pkey PRIMARY KEY (star_types_id);
 
 
 --
@@ -651,7 +692,7 @@ ALTER TABLE ONLY public.star_types
 --
 
 ALTER TABLE ONLY public.galaxy
-    ADD CONSTRAINT galaxy_galaxy_type_id_fkey FOREIGN KEY (galaxy_type_id) REFERENCES public.galaxy_types(galaxy_type_id);
+    ADD CONSTRAINT galaxy_galaxy_type_id_fkey FOREIGN KEY (galaxy_types_id) REFERENCES public.galaxy_types(galaxy_types_id);
 
 
 --
@@ -659,7 +700,7 @@ ALTER TABLE ONLY public.galaxy
 --
 
 ALTER TABLE ONLY public.moon
-    ADD CONSTRAINT moon_moon_type_id_fkey FOREIGN KEY (moon_type_id) REFERENCES public.moon_types(moon_type_id);
+    ADD CONSTRAINT moon_moon_type_id_fkey FOREIGN KEY (moon_types_id) REFERENCES public.moon_types(moon_types_id);
 
 
 --
@@ -675,7 +716,7 @@ ALTER TABLE ONLY public.moon
 --
 
 ALTER TABLE ONLY public.planet
-    ADD CONSTRAINT planet_planet_type_id_fkey FOREIGN KEY (planet_type_id) REFERENCES public.planet_types(planet_type_id);
+    ADD CONSTRAINT planet_planet_type_id_fkey FOREIGN KEY (planet_types_id) REFERENCES public.planet_types(planet_types_id);
 
 
 --
@@ -699,7 +740,7 @@ ALTER TABLE ONLY public.star
 --
 
 ALTER TABLE ONLY public.star
-    ADD CONSTRAINT star_star_type_id_fkey FOREIGN KEY (star_type_id) REFERENCES public.star_types(star_type_id);
+    ADD CONSTRAINT star_star_type_id_fkey FOREIGN KEY (star_types_id) REFERENCES public.star_types(star_types_id);
 
 
 --
